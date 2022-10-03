@@ -5,37 +5,24 @@ from datetime import datetime
 
 
 class Database:
-    def __init__(self):
-        pass
-
-    def __del__(self):
-        pass
-
     def connect(self):
         try:
-           con = sqlite3.connect("data/weather.db")
+           con = sqlite3.connect("data/cotacoes.db")
            return False,con
         except Exception as e:
             return True,e
      
-    def get_places(self,con,place):       
+    def getLastQuotation(self,con):       
         cur = con.cursor()
-        res = cur.execute("SELECT * from places where name like '"+str(place)+"%'")
-        data = res.fetchall()
+        res = cur.execute("SELECT * FROM cotacoes where data='"+str(datetime.today().strftime('%Y-%m-%d'))+"'")
+        data = res.fetchone()
         return data
-    
-    def insert_history(self,con,temp,humidity,wind_speedy):
+
+    def insertQuotation(self,con,quotation_usd,quotation_eur):
         cur = con.cursor()
-        data = (str(uuid.uuid4()),str(datetime.today().strftime('%Y-%m-%d %H:%M:%S')),float(temp),float(humidity),str(wind_speedy))
-        cur.execute("INSERT INTO history_user(id,date,temp,humidity,wind_speed) VALUES(?,?,?,?,?)", data)
+        data = (str(uuid.uuid4()),quotation_eur,quotation_usd,str(datetime.today().strftime('%Y-%m-%d')))
+        cur.execute("INSERT INTO cotacoes(id,cotacao_euro,cotacao_dolar,data) VALUES(?,?,?,?)", data)
         con.commit()
-    
-    def insert_place(self,con,woeid,name):
-        cur = con.cursor()
-        data = (str(uuid.uuid4()),int(woeid),str(name))
-        cur.execute("INSERT INTO places(id,woeid,name) VALUES(?,?,?)", data)
-        con.commit()
-           
            
 
 
